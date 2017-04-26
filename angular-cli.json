@@ -1,7 +1,7 @@
 {
   "project": {
     "version": "1.0.0-beta.18",
-    "name": "mm-dashboard"
+    "name": "rmr"
   },
   "apps": [
     {
@@ -18,11 +18,12 @@
       "prefix": "app",
       "mobile": false,
       "styles": [
+        "../node_modules/bootstrap/dist/css/bootstrap.min.css",
         "styles.css"
       ],
       "scripts": [],
+      "environmentSource": "environments/environment.ts",
       "environments": {
-        "source": "environments/environment.ts",
         "dev": "environments/environment.ts",
         "prod": "environments/environment.prod.ts"
       }

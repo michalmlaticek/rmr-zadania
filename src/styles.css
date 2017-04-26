@@ -1,1 +1,50 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+    margin: 0px 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+}
+
+.comp-container {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.left {
+    float: left;
+    width: 60%;
+    height: 100%;
+}
+
+.right {
+    float: right;
+    width: 39%;
+    height: 100%;
+    display: flex;
+}
+
+.svg {
+    /*width: 100%;
+    height: 100%;*/
+    width: 450px;
+    height: 450px;
+    border: 1px dashed #eeeeee;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1px;
+}
+
+.data-table {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    flex: 1;
+}

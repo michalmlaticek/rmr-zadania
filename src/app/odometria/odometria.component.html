@@ -1,0 +1,21 @@
+<article class="comp-container">
+  <div class="left">
+    <svg class="svg"></svg>
+  </div>
+  <div class="right">
+    <div class="data-table">
+      <table>
+        <tr>
+          <th style="min-width:100px">Time</th>
+          <th style="min-width:100px">Distance</th>
+          <th style="min-width:100px">Angle</th>
+        </tr>
+        <tr *ngFor="let r of data">
+          <td>{{ r.Timestamp / 1000000 }}</td>
+          <td>{{ r.Distance }}</td>
+          <td>{{ r.Angle }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</article>

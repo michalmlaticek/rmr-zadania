@@ -1,20 +1,44 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { RouterModule, Routes, NavigationExtras } from '@angular/router';
 
 import { AppComponent } from './app.component';
+import { OdometriaComponent } from './odometria/odometria.component';
+import { NavigaciaComponent } from './navigacia/navigacia.component';
+import { MapovanieComponent } from './mapovanie/mapovanie.component';
+import { TrajektoriaComponent } from './trajektoria/trajektoria.component';
+import { NavComponent } from './nav/nav.component';
+
+import { SensorDataService } from './sensor-data.service';
+import { ScanDataService } from './scan-data.service';
+
+// Routes
+const appRoutes: Routes = [
+  { path: 'odometria', component: OdometriaComponent },
+  { path: 'navigacia', component: NavigaciaComponent },
+  { path: 'mapovanie', component: MapovanieComponent },
+  { path: 'trajektoria', component: TrajektoriaComponent }
+]
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    OdometriaComponent,
+    NavigaciaComponent,
+    MapovanieComponent,
+    TrajektoriaComponent,
+    NavComponent
   ],
   imports: [
     BrowserModule,
-    FormsModule,
-    HttpModule
+    ReactiveFormsModule,
+    HttpModule,
+    RouterModule.forRoot(appRoutes)
   ],
-  providers: [],
+  providers: [SensorDataService, ScanDataService],
+  entryComponents: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

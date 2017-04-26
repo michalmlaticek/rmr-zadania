@@ -1,0 +1,11 @@
+text {
+    font-family: 'Arial Narrow', Arial, sans-serif;
+}
+
+.component-container {
+    padding-top: 70px;
+    padding-bottom: 30px;
+    display: block;
+    height: 100%;
+    width: 100%;
+}
