@@ -40,7 +40,7 @@ export class NavigaciaComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.d3Svg = D3Select.select(this.htmlElem).select('svg');
-    this.drawStep(this.data[5].Scans);
+    // this.drawStep(this.data[5].Scans);
   }
 
   drawStep(data: Array<IScan>) {
@@ -54,7 +54,9 @@ export class NavigaciaComponent implements AfterViewInit {
     let robotR = 15;
     let robotRScaled = xScale(robotR);
 
-    let d3TopG = this.d3Svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+    this.d3Svg.selectAll('.top-g').remove();
+
+    let d3TopG = this.d3Svg.append('g').attr('class', 'top-g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
     // drow robot
     d3TopG.selectAll("circle")
@@ -74,6 +76,10 @@ export class NavigaciaComponent implements AfterViewInit {
       .attr("cy", d => { return yScale(d.distance * Math.sin(d.angle / 180 * Math.PI)) })
       .attr("r", "1px")
       .attr("fill", "#000000");
+  }
+
+  onScanSelect(i: number) {
+    this.drawStep(this.data[i].Scans);
   }
 
 }

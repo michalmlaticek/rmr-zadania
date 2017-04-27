@@ -3,6 +3,20 @@
     <svg class="svg" (click)="setDestination($event)"></svg>
   </div>
   <div class="right">
-    <div>Navigacia Form</div>
+    <!--<div>Navigacia Form</div>-->
+    <div class="control-area">
+      <table class="table">
+        <tr>
+          <th style="min-width:40px">ID</th>
+          <th style="min-width:100px">Time</th>
+          <th style="min-width:100px">Sample Count</th>
+        </tr>
+        <tr *ngFor="let r of data; let i = index" (click)="onScanSelect(i)">
+          <td>{{i}}</td>
+          <td>{{ r.TimeStamp / 1000000 }}</td>
+          <td>{{ r.Scans.length }}</td>
+        </tr>
+      </table>
+    </div>
   </div>
 </article>
