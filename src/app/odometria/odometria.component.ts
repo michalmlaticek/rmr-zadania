@@ -11,8 +11,7 @@ import * as D3Transition from 'd3-transition';
 import * as D3Time from 'd3-time';
 import * as D3TimeFormat from 'd3-time-format';
 
-import { ISensorData } from '../i-sensor-data';
-import { IXyData } from '../i-xy-data';
+import { ISensorData, IXySensorData } from '../interfaces';
 import { SensorDataService } from '../sensor-data.service';
 
 
@@ -23,7 +22,7 @@ import { SensorDataService } from '../sensor-data.service';
 })
 export class OdometriaComponent implements AfterViewInit {
   data: Array<ISensorData>;
-  xyData: Array<IXyData> = new Array<IXyData>();
+  xyData: Array<IXySensorData> = new Array<IXySensorData>();
 
   margin = {
     left: 5,
@@ -38,7 +37,7 @@ export class OdometriaComponent implements AfterViewInit {
   constructor(private element: ElementRef,
     private sensorDataService: SensorDataService) {
     this.htmlElem = element.nativeElement;
-    this.data = sensorDataService.getData();
+    this.data = sensorDataService.getRawData();
     console.log("data: ", this.data);
   }
 
@@ -49,25 +48,7 @@ export class OdometriaComponent implements AfterViewInit {
   }
 
   computeToXY() {
-    this.data.forEach((item, i) => {
-      if (item.Timestamp != 0) {
-        if (i === 0) {
-          this.xyData.push({
-            timestamp: new Date(item.Timestamp),
-            fi: item.Angle,
-            x: item.Distance * Math.cos(item.Angle),
-            y: item.Distance * Math.sin(item.Angle)
-          })
-        } else {
-          this.xyData.push({
-            timestamp: new Date(item.Timestamp),
-            fi: this.xyData[i - 1].fi + item.Angle,
-            x: this.xyData[i - 1].x + item.Distance * Math.cos(this.xyData[i - 1].fi + item.Angle),
-            y: this.xyData[i - 1].y + item.Distance * Math.sin(this.xyData[i - 1].fi + item.Angle)
-          })
-        }
-      }
-    });
+    this.xyData = this.sensorDataService.getXYData();
     console.log("xyData: ", this.xyData);
   }
 
@@ -79,8 +60,14 @@ export class OdometriaComponent implements AfterViewInit {
     // let yScale = D3Scale.scaleLinear().range([0, height]).domain(D3Array.extent(this.xyData, d => d.y));
     let width = 450;
     let height = 450;
-    let xScale = D3Scale.scaleLinear().range([0, width - this.margin.left - this.margin.right]).domain(D3Array.extent(this.xyData, d => d.x));
-    let yScale = D3Scale.scaleLinear().range([0, height - this.margin.top - this.margin.bottom]).domain(D3Array.extent(this.xyData, d => d.y));
+    let xDomain = D3Array.extent(this.xyData, d => d.x);
+    let xMax = Math.abs(xDomain[0]) < Math.abs(xDomain[1]) ? Math.abs(xDomain[1]) : Math.abs(xDomain[0]);
+    let yDomain = D3Array.extent(this.xyData, d => d.y);
+    let yMax = Math.abs(yDomain[0]) < Math.abs(yDomain[1]) ? Math.abs(yDomain[1]) : Math.abs(yDomain[0]);
+    let domainMax = D3Array.max([xMax, yMax]);
+    console.log("domainMax: ", domainMax);
+    let xScale = D3Scale.scaleLinear().range([0, (width / 2) - this.margin.left - this.margin.right]).domain([0, domainMax]);
+    let yScale = D3Scale.scaleLinear().range([0, (height / 2) - this.margin.top - this.margin.bottom]).domain([0, domainMax]);
     let line = D3Shape.line();
 
     line = line.x(d => {
@@ -94,7 +81,7 @@ export class OdometriaComponent implements AfterViewInit {
       return scaledY;
     });
 
-    let d3TopG = this.d3Svg.append('g').attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+    let d3TopG = this.d3Svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
     d3TopG.append("path")
       .datum(this.xyData)
       .attr("class", "line")

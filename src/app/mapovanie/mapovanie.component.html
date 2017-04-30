@@ -3,6 +3,26 @@
     <svg class="svg"></svg>
   </div>
   <div class="right">
-    <div>Mapovanie Form</div>
+    <div class="control-area">
+      <button (click)="onMove(1)">Run trough all</button>
+      <table class="table">
+        <tr>
+          <th style="min-width: 30px">ID</th>
+          <th style="min-width: 40px">Time</th>
+          <th style="min-width: 100px">No. of Movements</th>
+          <th style="min-width: 50px">X Offset</th>
+          <th style="min-width: 50px">Y Offset</th>
+          <th style="min-width: 50px">Angle Offset</th>
+        </tr>
+        <tr *ngFor="let r of syncedData; let i = index" (click)="drawPartOfMap(i)">
+          <td>{{ i }}</td>
+          <td>{{ r.scan.timestamp / 1000000 }}</td>
+          <td>{{ r.xyMoves.length }}</td>
+          <td>{{ r.xyOffset.x }}</td>
+          <td>{{ r.xyOffset.y }}</td>
+          <td>{{ r.xyOffset.angleInDegrees }}</td>
+        </tr>
+      </table>
+    </div>
   </div>
 </article>

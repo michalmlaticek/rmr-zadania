@@ -1,8 +1,6 @@
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
-import { ISensorData } from '../i-sensor-data';
-import { SensorDataService } from '../sensor-data.service';
-import { IScanData, IScan } from '../i-scan-data';
-import { ScanDataService } from '../scan-data.service';
+import { Component, AfterViewInit, ElementRef, Inject } from '@angular/core';
+import { ISensorData, IScanData, IScan, ISyncedData, IXy, IXySensorData } from '../interfaces';
+import { MapDataService } from '../map-data.service';
 
 import * as D3Scale from 'd3-scale';
 import * as D3Path from 'd3-path';
@@ -23,39 +21,121 @@ import * as D3TimeFormat from 'd3-time-format';
 export class MapovanieComponent implements AfterViewInit {
 
   htmlElem: HTMLElement;
-  scanData: Array<IScanData>;
-  sensorData: Array<ISensorData>;
-  sincedData: Array<any>;
+  syncedData: Array<ISyncedData>;
+  pureMapData: Array<IXy>;
+  movesData: Array<IXySensorData>;
   d3Svg: any;
 
   margin = {
-    left: 5,
-    right: 5,
-    top: 5,
-    bottom: 5
+    left: 10,
+    right: 10,
+    top: 10,
+    bottom: 10
   }
 
-  constructor(private element: ElementRef,
-    private scanDataService: ScanDataService,
-    private sensorDataService: SensorDataService) {
+  constructor(
+    @Inject(ElementRef) private element: ElementRef,
+    @Inject(MapDataService) private mapDataService: MapDataService) {
     this.htmlElem = element.nativeElement;
-    this.scanData = scanDataService.getData();
-    this.sensorData = sensorDataService.getData();
-    this.sincDataSets();
+    this.syncedData = mapDataService.getSyncedData();
+    this.pureMapData = mapDataService.getPureMapData();
+    this.movesData = mapDataService.getMovesData();
   }
 
   ngAfterViewInit() {
     this.d3Svg = D3Select.select(this.htmlElem).select('svg');
-    this.draw();
+    this.drawMap();
   }
 
-  draw() {
+  drawMap() {
+    let mapData = this.pureMapData;
+    let movesData = this.movesData;
 
+    let width = 450;
+    let height = 450;
+    let xDomain = D3Array.extent(mapData, d => d.x);
+    let xMax = Math.abs(xDomain[0]) < Math.abs(xDomain[1]) ? Math.abs(xDomain[1]) : Math.abs(xDomain[0]);
+    let yDomain = D3Array.extent(mapData, d => d.y);
+    let yMax = Math.abs(yDomain[0]) < Math.abs(yDomain[1]) ? Math.abs(yDomain[1]) : Math.abs(yDomain[0]);
+    let domainMax = D3Array.max([xMax, yMax]);
+    console.log("domainMax: ", domainMax);
+    let xScale = D3Scale.scaleLinear().range([0, (width / 2) - this.margin.left - this.margin.right]).domain([0, domainMax]);
+    let yScale = D3Scale.scaleLinear().range([0, (height / 2) - this.margin.top - this.margin.bottom]).domain([0, domainMax]);
+
+    this.d3Svg.selectAll('.map-group').remove();
+    let d3TopG = this.d3Svg.append('g').attr('class', 'map-group').attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')');
+
+    d3TopG.append('g').attr('class', 'map-moves').selectAll("circle")
+      .data(movesData) // always draw robot in the center
+      .enter()
+      .append("circle")
+      .attr("cx", d => { return xScale(d.x); })
+      .attr("cy", d => { return yScale(d.y); })
+      .attr("r", 1 + "px")
+      .attr("fill", "blue");
+
+    d3TopG.append('g').attr('class', 'map-vals').selectAll("circle")
+      .data(mapData)
+      .enter()
+      .append("circle")
+      .attr("cx", d => { return xScale(d.x); })
+      .attr("cy", d => { return yScale(d.y); })
+      .attr("r", "1px")
+      .attr("fill", "#000000");
   }
 
-  sincDataSets() {
-    console.log("scan data length: ", this.scanData.length);
-    console.log("sensor data length: ", this.sensorData.length);
+  drawPartOfMap(idOfSyncedData: number) {
+    let mapData: Array<IXy> = new Array();
+    let moves: Array<IXySensorData> = new Array();
+    let syncedDataSlice = this.syncedData.slice(0, idOfSyncedData + 1);
+    console.log("sliced sync data: ", syncedDataSlice);
+
+    syncedDataSlice.forEach(element => {
+      console.log("element.scanWithOffcet: ", element.scanWithOffset);
+      Array.prototype.push.apply(mapData, element.scanWithOffset);
+      Array.prototype.push.apply(moves, element.xyMoves);
+    });
+
+    let width = 450;
+    let height = 450;
+    let xDomain = D3Array.extent(this.pureMapData, d => d.x);
+    let xMax = Math.abs(xDomain[0]) < Math.abs(xDomain[1]) ? Math.abs(xDomain[1]) : Math.abs(xDomain[0]);
+    let yDomain = D3Array.extent(this.pureMapData, d => d.y);
+    let yMax = Math.abs(yDomain[0]) < Math.abs(yDomain[1]) ? Math.abs(yDomain[1]) : Math.abs(yDomain[0]);
+    let domainMax = D3Array.max([xMax, yMax]);
+    console.log("domainMax: ", domainMax);
+
+    let xScale = D3Scale.scaleLinear().range([0, (width / 2) - this.margin.left - this.margin.right]).domain([0, domainMax]);
+    let yScale = D3Scale.scaleLinear().range([0, (height / 2) - this.margin.top - this.margin.bottom]).domain([0, domainMax]);
+
+    this.d3Svg.selectAll('.map-group').remove();
+    let d3TopG = this.d3Svg.append('g').attr('class', 'map-group').attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')');
+
+    d3TopG.selectAll("circle")
+      .data(moves) // always draw robot in the center
+      .enter()
+      .append("circle")
+      .attr("cx", d => { return xScale(d.x); })
+      .attr("cy", d => { return yScale(d.y); })
+      .attr("r", 2 + "px")
+      .attr("fill", "blue");
+
+    d3TopG.selectAll("circle")
+      .data(mapData)
+      .enter()
+      .append("circle")
+      .attr("cx", d => { return xScale(d.x); })
+      .attr("cy", d => { return yScale(d.y); })
+      .attr("r", "1px")
+      .attr("fill", "#000000");
   }
 
+  onMove(i: number) {
+    setTimeout(() => {
+      this.drawPartOfMap(i);
+      if (i < this.syncedData.length - 1) {
+        this.onMove(i + 1);
+      }
+    }, 200);
+  }
 }

@@ -1,8 +1,16 @@
 <article class="comp-container">
   <div class="left">
-    <svg class="svg"></svg>
+    <table class="trajectory-table" [style.width.px]="tableSize">
+      <tr *ngFor="let row of trajectoryData; let i = index">
+        <td *ngFor="let cell of row; let j = index" (click)="onCellSelect(cell)" [style.width.px]="cellSize" [style.height.px]="cellSize"
+          [style.background-color]="cell.color" [style.font-size.px]="fontSize">{{cell.value}}</td>
+      </tr>
+    </table>
   </div>
   <div class="right">
-    <div>Trajektoria Form</div>
+    <div class="row">Selection</div>
+    <div class="row">Start Cell: {{ startCell?.x }} x {{ startCell?.y }}</div>
+    <div class="row">End Cell: {{ endCell?.x }} x {{ endCell?.y }}</div>
+    <div class="row" (click)="onRunFloodFill()">Run Flood Fill</div>
   </div>
 </article>

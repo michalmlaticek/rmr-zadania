@@ -13,6 +13,7 @@ import { NavComponent } from './nav/nav.component';
 
 import { SensorDataService } from './sensor-data.service';
 import { ScanDataService } from './scan-data.service';
+import { MapDataService } from './map-data.service';
 
 // Routes
 const appRoutes: Routes = [
@@ -37,7 +38,7 @@ const appRoutes: Routes = [
     HttpModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [SensorDataService, ScanDataService],
+  providers: [SensorDataService, ScanDataService, MapDataService],
   entryComponents: [],
   bootstrap: [AppComponent]
 })

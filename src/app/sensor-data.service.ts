@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ISensorData } from './i-sensor-data';
+import { ISensorData, IXySensorData } from './interfaces';
 
 @Injectable()
 export class SensorDataService {
 
   constructor() { }
 
-  getData(): Array<ISensorData> {
+  getRawData(): Array<ISensorData> {
     return [
       {
         "Timestamp": 505013,
@@ -2624,6 +2624,30 @@ export class SensorDataService {
         "Angle": 0.0
       }
     ]
+  }
+
+  getXYData(): Array<IXySensorData> {
+    let xyData: Array<IXySensorData> = new Array<IXySensorData>();
+    this.getRawData().forEach((item, i) => {
+      if (item.Timestamp != 0) {
+        if (i === 0) {
+          xyData.push({
+            timestamp: item.Timestamp,
+            fi: item.Angle,
+            x: (item.Distance / 10) * Math.cos(item.Angle),
+            y: (item.Distance / 10) * Math.sin(item.Angle)
+          })
+        } else {
+          xyData.push({
+            timestamp: item.Timestamp,
+            fi: xyData[i - 1].fi + item.Angle,
+            x: xyData[i - 1].x + ((item.Distance / 10) * Math.cos((xyData[i - 1].fi))), // + item.Angle))),
+            y: xyData[i - 1].y + ((item.Distance / 10) * Math.sin((xyData[i - 1].fi))) // + item.Angle)))
+          })
+        }
+      }
+    });
+    return xyData;
   }
 
 }

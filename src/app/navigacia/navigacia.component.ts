@@ -11,7 +11,7 @@ import * as D3Transition from 'd3-transition';
 import * as D3Time from 'd3-time';
 import * as D3TimeFormat from 'd3-time-format';
 
-import { IScanData, IScan } from '../i-scan-data';
+import { IScanData, IScan, IXyScanData, IXy } from '../interfaces';
 import { ScanDataService } from '../scan-data.service';
 
 @Component({
@@ -21,9 +21,13 @@ import { ScanDataService } from '../scan-data.service';
 })
 export class NavigaciaComponent implements AfterViewInit {
   htmlElem: HTMLElement;
-  data: Array<IScanData>;
-  // xyData: Array<IXyData> = new Array<IXyData>();
+  rawData: Array<IScanData>;
+  xyScanData: Array<IXyScanData>;
   d3Svg: any;
+
+  startXY: IXy;
+  endXY: IXy;
+  pointTypeToBeSet = 's'
 
   margin = {
     left: 5,
@@ -35,22 +39,21 @@ export class NavigaciaComponent implements AfterViewInit {
   constructor(private element: ElementRef,
     private scanDataService: ScanDataService) {
     this.htmlElem = element.nativeElement;
-    this.data = scanDataService.getData();
+    this.rawData = scanDataService.getRawData();
+    this.xyScanData = scanDataService.getXYData();
   }
 
   ngAfterViewInit() {
     this.d3Svg = D3Select.select(this.htmlElem).select('svg');
-    // this.drawStep(this.data[5].Scans);
   }
 
-  drawStep(data: Array<IScan>) {
-
+  drawStep(data: Array<IXy>) {
     // let width = this.htmlElem.children[0].children[0].clientWidth - this.margin.right - this.margin.left;
     // let height = this.htmlElem.children[0].children[0].clientHeight - this.margin.top - this.margin.bottom;
     let width = 450;
     let height = 450;
-    let xScale = D3Scale.scaleLinear().range([0, width / 2]).domain([0, 220]);
-    let yScale = D3Scale.scaleLinear().range([0, height / 2]).domain([0, 220]);
+    let xScale = D3Scale.scaleLinear().range([-width / 2, width / 2]).domain([-220, 220]);
+    let yScale = D3Scale.scaleLinear().range([-height / 2, height / 2]).domain([-220, 220]);
     let robotR = 15;
     let robotRScaled = xScale(robotR);
 
@@ -60,7 +63,7 @@ export class NavigaciaComponent implements AfterViewInit {
 
     // drow robot
     d3TopG.selectAll("circle")
-      .data([0])
+      .data([0]) // always draw robot in the center
       .enter()
       .append("circle")
       .attr("cx", d => { return d })
@@ -72,14 +75,40 @@ export class NavigaciaComponent implements AfterViewInit {
       .data(data)
       .enter()
       .append("circle")
-      .attr("cx", d => { return xScale(d.distance * Math.cos(d.angle / 180 * Math.PI)) })
-      .attr("cy", d => { return yScale(d.distance * Math.sin(d.angle / 180 * Math.PI)) })
+      .attr("cx", d => { return xScale(d.x); })
+      .attr("cy", d => { return yScale(d.y); })
       .attr("r", "1px")
       .attr("fill", "#000000");
   }
 
   onScanSelect(i: number) {
-    this.drawStep(this.data[i].Scans);
+    this.drawStep(this.xyScanData[i].scans);
   }
 
+  onMove(i: number) {
+    let scans = this.xyScanData[i].scans;
+    console.log("onMove -> scans", scans);
+    setTimeout(() => {
+      this.drawStep(scans);
+      if (i < this.xyScanData.length - 1) {
+        this.onMove(i + 1);
+      }
+    }, 200);
+  }
+
+  setStartEnd(event: MouseEvent) {
+    if (this.pointTypeToBeSet === 's') {
+      this.startXY = { x: event.x, y: event.y };
+      this.pointTypeToBeSet = 'e';
+      console.log("start point: ", this.startXY);
+    } else {
+      this.endXY = { x: event.x, y: event.y };
+      this.pointTypeToBeSet = 's';
+      console.log("end point: ", this.endXY);
+    }
+  }
+
+  drawPossiblePaths() {
+    let topG = this.d3Svg.select('.top-g');
+  }
 }
