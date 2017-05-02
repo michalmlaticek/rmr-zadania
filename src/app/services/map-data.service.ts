@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { ScanDataService } from './scan-data.service';
-import { SensorDataService } from './sensor-data.service';
-import { IXyScanData, IXySensorData, IXy, ISyncedData, IXyAngleData } from './interfaces';
+import { MoveDataService } from './move-data.service';
+import { IXyScanData, IXySensorData, IXy, ISyncedData, IXyAngleData } from '../interfaces';
 
 @Injectable()
 export class MapDataService {
@@ -11,7 +11,7 @@ export class MapDataService {
 
   constructor(
     @Inject(ScanDataService) private scanData: ScanDataService,
-    @Inject(SensorDataService) private sensorData: SensorDataService
+    @Inject(MoveDataService) private sensorData: MoveDataService
   ) {
     console.log("scan data: ", this.scanData);
     console.log("sensor data: ", this.sensorData);

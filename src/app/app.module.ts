@@ -11,9 +11,7 @@ import { MapovanieComponent } from './mapovanie/mapovanie.component';
 import { TrajektoriaComponent } from './trajektoria/trajektoria.component';
 import { NavComponent } from './nav/nav.component';
 
-import { SensorDataService } from './sensor-data.service';
-import { ScanDataService } from './scan-data.service';
-import { MapDataService } from './map-data.service';
+import { MoveDataService, ScanDataService, MapDataService, DoorService } from './services';
 
 // Routes
 const appRoutes: Routes = [
@@ -38,7 +36,7 @@ const appRoutes: Routes = [
     HttpModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [SensorDataService, ScanDataService, MapDataService],
+  providers: [MoveDataService, ScanDataService, MapDataService, DoorService],
   entryComponents: [],
   bootstrap: [AppComponent]
 })

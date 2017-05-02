@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IScanData, IXyScanData, IXy } from './interfaces';
+import { IScanData, IXyScanData, IXyAngleData } from '../interfaces';
 
 @Injectable()
 export class ScanDataService {
@@ -47241,11 +47241,13 @@ export class ScanDataService {
     getXYData(): Array<IXyScanData> {
         let xyData: Array<IXyScanData> = new Array();
         this.getRawData().forEach(element => {
-            let xyScans: Array<IXy> = new Array();
+            let xyScans: Array<IXyAngleData> = new Array();
             element.Scans.forEach(item => {
                 xyScans.push({
                     x: item.distance * Math.cos(-item.angle / 180 * Math.PI), // to radians
-                    y: item.distance * Math.sin(-item.angle / 180 * Math.PI) // to radians
+                    y: item.distance * Math.sin(-item.angle / 180 * Math.PI), // to radians
+                    angle: -item.angle / 180 * Math.PI,
+                    angleInDegrees: -item.angle
                 });
             });
             xyData.push({

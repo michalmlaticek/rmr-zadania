@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ISensorData, IXySensorData } from './interfaces';
+import { ISensorData, IXySensorData } from '../interfaces';
 
 @Injectable()
-export class SensorDataService {
+export class MoveDataService {
 
   constructor() { }
 

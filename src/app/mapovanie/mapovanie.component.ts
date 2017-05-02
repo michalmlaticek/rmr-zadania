@@ -1,6 +1,6 @@
 import { Component, AfterViewInit, ElementRef, Inject } from '@angular/core';
 import { ISensorData, IScanData, IScan, ISyncedData, IXy, IXySensorData } from '../interfaces';
-import { MapDataService } from '../map-data.service';
+import { MapDataService } from '../services';
 
 import * as D3Scale from 'd3-scale';
 import * as D3Path from 'd3-path';

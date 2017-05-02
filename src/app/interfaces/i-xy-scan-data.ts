@@ -1,6 +1,6 @@
-import { IXy } from './i-xy';
+import { IXyAngleData } from './i-xy-angle-data';
 
 export interface IXyScanData {
     timestamp: number;
-    scans: Array<IXy>;
+    scans: Array<IXyAngleData>;
 }

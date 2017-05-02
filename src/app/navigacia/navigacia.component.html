@@ -4,7 +4,11 @@
   </div>
   <div class="right">
     <div class="control-area">
+      <div class="row">Selection</div>
+      <div class="row">Start Cell: {{ startXY?.x }} x {{ startXY?.y }}</div>
+      <div class="row">End Cell: {{ endXY?.x }} x {{ endXY?.y }}</div>
       <button (click)="onMove(1)">Run trough all</button>
+      <button (click)="drawPossiblePaths()">Draw Path</button>
       <table class="table">
         <tr>
           <th style="min-width:40px">ID</th>

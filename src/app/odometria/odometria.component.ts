@@ -12,7 +12,7 @@ import * as D3Time from 'd3-time';
 import * as D3TimeFormat from 'd3-time-format';
 
 import { ISensorData, IXySensorData } from '../interfaces';
-import { SensorDataService } from '../sensor-data.service';
+import { MoveDataService } from '../services';
 
 
 @Component({
@@ -35,9 +35,9 @@ export class OdometriaComponent implements AfterViewInit {
   d3Svg: any;
 
   constructor(private element: ElementRef,
-    private sensorDataService: SensorDataService) {
+    private moveDataService: MoveDataService) {
     this.htmlElem = element.nativeElement;
-    this.data = sensorDataService.getRawData();
+    this.data = moveDataService.getRawData();
     console.log("data: ", this.data);
   }
 
@@ -48,7 +48,7 @@ export class OdometriaComponent implements AfterViewInit {
   }
 
   computeToXY() {
-    this.xyData = this.sensorDataService.getXYData();
+    this.xyData = this.moveDataService.getXYData();
     console.log("xyData: ", this.xyData);
   }
 
