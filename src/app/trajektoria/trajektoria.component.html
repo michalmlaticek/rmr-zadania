@@ -8,9 +8,13 @@
     </table>
   </div>
   <div class="right">
-    <div class="row">Selection</div>
-    <div class="row">Start Cell: {{ startCell?.x }} x {{ startCell?.y }}</div>
-    <div class="row">End Cell: {{ endCell?.x }} x {{ endCell?.y }}</div>
-    <div class="row" (click)="onRunFloodFill()">Run Flood Fill</div>
+    <div class="control-area">
+      <div class="row">
+        <div class="col-xs-12 note">(select start and end point by clicking in the map on the left)</div>
+        <div class="col-xs-12 col-md-6">Start Cell: {{ startCell?.x }} x {{ startCell?.y }}</div>
+        <div class="col-xs-12 col-md-6">End Cell: {{ endCell?.x }} x {{ endCell?.y }}</div>
+        <div class="col-xs-12 margin-top-20"><button class="btn-primary" (click)="onRunFloodFill()">Run Flood Fill</button></div>
+      </div>
+    </div>
   </div>
 </article>

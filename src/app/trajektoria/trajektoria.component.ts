@@ -25,8 +25,8 @@ interface IXYValue {
   templateUrl: './trajektoria.component.html',
   styleUrls: ['./trajektoria.component.css']
 })
-export class TrajektoriaComponent {
-
+export class TrajektoriaComponent implements AfterViewInit {
+  htmlElem: HTMLElement;
   sampleCount: number = 50;
   trajectoryData: Array<Array<IXYValue>> = new Array();
   pureMapData: Array<IXy>;
@@ -34,7 +34,7 @@ export class TrajektoriaComponent {
   domain: number;
   scaleToSampleCount: any;
 
-  tableSize: number = 500;
+  tableSize: number;
   cellSize: number;
   fontSize: number;
 
@@ -48,9 +48,14 @@ export class TrajektoriaComponent {
 
   path: Array<IXYValue> = new Array();
 
-  constructor(
+  constructor(private element: ElementRef,
     @Inject(MapDataService) private mapDataService: MapDataService) {
+    this.htmlElem = element.nativeElement;
     this.pureMapData = mapDataService.getPureMapData();
+  }
+
+  ngAfterViewInit() {
+    this.tableSize = D3Array.min([this.htmlElem.children[0].clientWidth, this.htmlElem.children[0].clientHeight]);
     this.cellSize = this.tableSize / this.sampleCount;
     this.fontSize = this.cellSize * 2 / 3;
     this.initDomain();
@@ -103,10 +108,6 @@ export class TrajektoriaComponent {
     });
 
     console.log(this.trajectoryData);
-  }
-
-  ngAfterViewInit() {
-
   }
 
   toD3TrajectoryData(trajectoryArray: Array<Array<number>>): Array<IXYValue> {

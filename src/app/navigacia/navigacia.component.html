@@ -4,23 +4,29 @@
   </div>
   <div class="right">
     <div class="control-area">
-      <div class="row">Selection</div>
-      <div class="row">Start Cell: {{ startXY?.x }} x {{ startXY?.y }}</div>
-      <div class="row">End Cell: {{ endXY?.x }} x {{ endXY?.y }}</div>
-      <button (click)="onMove(1)">Run trough all</button>
-      <button (click)="drawPossiblePaths()">Draw Path</button>
-      <table class="table">
-        <tr>
-          <th style="min-width:40px">ID</th>
-          <th style="min-width:100px">Time</th>
-          <th style="min-width:100px">Sample Count</th>
-        </tr>
-        <tr *ngFor="let r of rawData; let i = index" (click)="onScanSelect(i)">
-          <td>{{i}}</td>
-          <td>{{ r.TimeStamp / 1000000 }}</td>
-          <td>{{ r.Scans.length }}</td>
-        </tr>
-      </table>
+      <div class="data-table">
+        <table class="table">
+          <tr>
+            <th style="min-width:40px">ID</th>
+            <th style="min-width:100px">Time</th>
+            <th style="min-width:100px">Sample Count</th>
+          </tr>
+          <tr *ngFor="let r of rawData; let i = index" (click)="onScanSelect(i)">
+            <td>{{i}}</td>
+            <td>{{ r.TimeStamp / 1000000 }}</td>
+            <td>{{ r.Scans.length }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="actions container">
+        <div class="row">
+          <div class="col-xs-12 note">(click on the chart area to select start and end point)</div>
+          <div class="col-xs-12 col-md-6">Start Cell: {{ startXY?.x }} x {{ startXY?.y }}</div>
+          <div class="col-xs-12 col-md-6">End Cell: {{ endXY?.x }} x {{ endXY?.y }}</div>
+          <div class="col-xs-12 margin-top-20"><button class="btn-primary" (click)="onMove(1)">Run trough all</button><span class="note margin-left-10">(or click on individual scan row)</span></div>
+          <!--<button (click)="drawPossiblePaths()">Draw Path</button>-->
+        </div>
+      </div>
     </div>
   </div>
 </article>

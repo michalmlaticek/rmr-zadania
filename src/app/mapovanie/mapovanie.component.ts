@@ -26,12 +26,7 @@ export class MapovanieComponent implements AfterViewInit {
   movesData: Array<IXySensorData>;
   d3Svg: any;
 
-  margin = {
-    left: 10,
-    right: 10,
-    top: 10,
-    bottom: 10
-  }
+  margin = 10;
 
   constructor(
     @Inject(ElementRef) private element: ElementRef,
@@ -51,16 +46,16 @@ export class MapovanieComponent implements AfterViewInit {
     let mapData = this.pureMapData;
     let movesData = this.movesData;
 
-    let width = 450;
-    let height = 450;
+    let width = this.htmlElem.children[0].children[0].clientWidth;
+    let height = this.htmlElem.children[0].children[0].clientHeight;
+    let svgSize = D3Array.min([width, height]);
     let xDomain = D3Array.extent(mapData, d => d.x);
     let xMax = Math.abs(xDomain[0]) < Math.abs(xDomain[1]) ? Math.abs(xDomain[1]) : Math.abs(xDomain[0]);
     let yDomain = D3Array.extent(mapData, d => d.y);
     let yMax = Math.abs(yDomain[0]) < Math.abs(yDomain[1]) ? Math.abs(yDomain[1]) : Math.abs(yDomain[0]);
     let domainMax = D3Array.max([xMax, yMax]);
     console.log("domainMax: ", domainMax);
-    let xScale = D3Scale.scaleLinear().range([0, (width / 2) - this.margin.left - this.margin.right]).domain([0, domainMax]);
-    let yScale = D3Scale.scaleLinear().range([0, (height / 2) - this.margin.top - this.margin.bottom]).domain([0, domainMax]);
+    let scale = D3Scale.scaleLinear().range([-svgSize / 2 + this.margin, svgSize / 2 - this.margin]).domain([-domainMax, domainMax]);
 
     this.d3Svg.selectAll('.map-group').remove();
     let d3TopG = this.d3Svg.append('g').attr('class', 'map-group').attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')');
@@ -69,8 +64,8 @@ export class MapovanieComponent implements AfterViewInit {
       .data(movesData) // always draw robot in the center
       .enter()
       .append("circle")
-      .attr("cx", d => { return xScale(d.x); })
-      .attr("cy", d => { return yScale(d.y); })
+      .attr("cx", d => { return scale(d.x); })
+      .attr("cy", d => { return scale(d.y); })
       .attr("r", 1 + "px")
       .attr("fill", "blue");
 
@@ -78,8 +73,8 @@ export class MapovanieComponent implements AfterViewInit {
       .data(mapData)
       .enter()
       .append("circle")
-      .attr("cx", d => { return xScale(d.x); })
-      .attr("cy", d => { return yScale(d.y); })
+      .attr("cx", d => { return scale(d.x); })
+      .attr("cy", d => { return scale(d.y); })
       .attr("r", "1px")
       .attr("fill", "#000000");
   }
@@ -96,8 +91,9 @@ export class MapovanieComponent implements AfterViewInit {
       Array.prototype.push.apply(moves, element.xyMoves);
     });
 
-    let width = 450;
-    let height = 450;
+    let width = this.htmlElem.children[0].children[0].clientWidth;
+    let height = this.htmlElem.children[0].children[0].clientHeight;
+    let svgSize = D3Array.min([width, height]);
     let xDomain = D3Array.extent(this.pureMapData, d => d.x);
     let xMax = Math.abs(xDomain[0]) < Math.abs(xDomain[1]) ? Math.abs(xDomain[1]) : Math.abs(xDomain[0]);
     let yDomain = D3Array.extent(this.pureMapData, d => d.y);
@@ -105,8 +101,7 @@ export class MapovanieComponent implements AfterViewInit {
     let domainMax = D3Array.max([xMax, yMax]);
     console.log("domainMax: ", domainMax);
 
-    let xScale = D3Scale.scaleLinear().range([0, (width / 2) - this.margin.left - this.margin.right]).domain([0, domainMax]);
-    let yScale = D3Scale.scaleLinear().range([0, (height / 2) - this.margin.top - this.margin.bottom]).domain([0, domainMax]);
+    let scale = D3Scale.scaleLinear().range([-svgSize / 2 + this.margin, svgSize / 2 - this.margin]).domain([-domainMax, domainMax]);
 
     this.d3Svg.selectAll('.map-group').remove();
     let d3TopG = this.d3Svg.append('g').attr('class', 'map-group').attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')');
@@ -115,8 +110,8 @@ export class MapovanieComponent implements AfterViewInit {
       .data(moves) // always draw robot in the center
       .enter()
       .append("circle")
-      .attr("cx", d => { return xScale(d.x); })
-      .attr("cy", d => { return yScale(d.y); })
+      .attr("cx", d => { return scale(d.x); })
+      .attr("cy", d => { return scale(d.y); })
       .attr("r", 2 + "px")
       .attr("fill", "blue");
 
@@ -124,8 +119,8 @@ export class MapovanieComponent implements AfterViewInit {
       .data(mapData)
       .enter()
       .append("circle")
-      .attr("cx", d => { return xScale(d.x); })
-      .attr("cy", d => { return yScale(d.y); })
+      .attr("cx", d => { return scale(d.x); })
+      .attr("cy", d => { return scale(d.y); })
       .attr("r", "1px")
       .attr("fill", "#000000");
   }

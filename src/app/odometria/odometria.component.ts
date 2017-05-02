@@ -24,12 +24,7 @@ export class OdometriaComponent implements AfterViewInit {
   data: Array<ISensorData>;
   xyData: Array<IXySensorData> = new Array<IXySensorData>();
 
-  margin = {
-    left: 5,
-    right: 5,
-    top: 5,
-    bottom: 5
-  }
+  margin = 10;
 
   htmlElem: HTMLElement;
   d3Svg: any;
@@ -54,24 +49,23 @@ export class OdometriaComponent implements AfterViewInit {
 
 
   draw() {
-    // let width = this.htmlElem.children[0].children[0].clientWidth - this.margin.right - this.margin.left;
-    // let height = this.htmlElem.children[0].children[0].clientHeight - this.margin.top - this.margin.bottom;
-    // let xScale = D3Scale.scaleLinear().range([0, width]).domain(D3Array.extent(this.xyData, d => d.x));
-    // let yScale = D3Scale.scaleLinear().range([0, height]).domain(D3Array.extent(this.xyData, d => d.y));
-    let width = 450;
-    let height = 450;
+    let width = this.htmlElem.children[0].children[0].clientWidth;
+    let height = this.htmlElem.children[0].children[0].clientHeight;
+    let svgSize = D3Array.min([width, height]);
+    // let width = 450;
+    // let height = 450;
     let xDomain = D3Array.extent(this.xyData, d => d.x);
     let xMax = Math.abs(xDomain[0]) < Math.abs(xDomain[1]) ? Math.abs(xDomain[1]) : Math.abs(xDomain[0]);
     let yDomain = D3Array.extent(this.xyData, d => d.y);
     let yMax = Math.abs(yDomain[0]) < Math.abs(yDomain[1]) ? Math.abs(yDomain[1]) : Math.abs(yDomain[0]);
     let domainMax = D3Array.max([xMax, yMax]);
     console.log("domainMax: ", domainMax);
-    let xScale = D3Scale.scaleLinear().range([0, (width / 2) - this.margin.left - this.margin.right]).domain([0, domainMax]);
-    let yScale = D3Scale.scaleLinear().range([0, (height / 2) - this.margin.top - this.margin.bottom]).domain([0, domainMax]);
+    let scale = D3Scale.scaleLinear().range([(-svgSize / 2) + this.margin, (svgSize / 2) - this.margin]).domain([-domainMax, domainMax]);
+    let yScale = D3Scale.scaleLinear().range([(-svgSize / 2) + this.margin, (svgSize / 2) - this.margin]).domain([-domainMax, domainMax]);
     let line = D3Shape.line();
 
     line = line.x(d => {
-      let scaledX = xScale(d["x"]);
+      let scaledX = scale(d["x"]);
       console.log("scaledX: ", scaledX);
       return scaledX;
     });
